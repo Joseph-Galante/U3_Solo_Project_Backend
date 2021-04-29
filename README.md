@@ -44,12 +44,15 @@ Project Details
 |   POST    | /users    | user signup   
 |   POST    | /users/login | user login 
 |   GET     | /users/profile | user profile
-|   PUT     | /users    | user update
+|   PUT     | /users/profile | user update
 |   POST    | /projects | create project
 |   GET     | /projects | get projects
 |   GET     | /projects/:id | get one project
 |   PUT     | /projects/:id | update project
+|   POST    | /projects/:id/collaborators | add collaborator
+|   DELETE    | /projects/:projectId/collaborators/:userId | remove collaborator
 |   DELETE  | /projects/:id | delete project
+|   POST    | /projects/:id/tasks | create project task
 |   GET     | /projects/:id/tasks | get project tasks
 |   GET     | /tasks/:id | get one task
 |   PUT     | /tasks/:id | update task
