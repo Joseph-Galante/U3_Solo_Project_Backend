@@ -304,7 +304,7 @@ projectController.delete = async (req, res) =>
         if (user && user.id === project.userId)
         {
             // grab all of project's tasks
-            const tasks = await models.task.findAll({ where: { postId: project.id}});
+            const tasks = await models.task.findAll({ where: { projectId: project.id}});
             // delete every task on project, if any exist
             tasks ? tasks.forEach(task => { task.destroy(); }) : null;
             // delete project
