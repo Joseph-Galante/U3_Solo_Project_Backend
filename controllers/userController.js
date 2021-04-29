@@ -154,4 +154,87 @@ userController.update = async (req, res) =>
     }
 }
 
+// get all invites
+userController.getInvites = async (req, res) =>
+{
+    try {
+        // grab authorized user
+        const user = await UserAuth.authorizeUser(req.headers.authorization);
+        // check if user exists
+        if (user)
+        {
+           // get user invites
+           const invites = await user.getInvites();
+           // return invites, if any exist
+           invites ? res.json({ invites }) : res.status(404).json({ error: 'no invites found'});
+        }
+        // no user
+        else
+        {
+            // status 404 - could not be found
+            res.status(404).json({ error: 'unauthorized to get invites'});
+        }
+    } catch (error) {
+        // status 400 - bad request
+        res.status(400).json({ error: 'could not get invites'});
+    }
+}
+
+// reply to invite
+userController.replyToInvite = async (req, res) =>
+{
+    try {
+        // grab authorized user
+        const user = await UserAuth.authorizeUser(req.headers.authorization);
+        // check if user exists
+        if (user)
+        {
+            // grab invite
+            const invite = await models.invite.findOne({ where: { id: req.params.id}});
+           // check if invite exists and is accepted
+           if (invite && req.body.reply === 'accept')
+           {
+               // accept invite
+               // grab project from invite, include users
+               const project = await models.project.findOne({ 
+                   where: {
+                       id: invite.projectId
+                   },
+                   include: [ { model: models.user } ]
+               })
+               // add user to project
+               await user.addProject(project);
+               // destroy invite
+               await invite.destroy();
+               // reload project to reflect new user
+               await project.reload();
+               // return project
+               res.json({ message: 'invite accepted', project });
+           }
+           // declined
+           else if (invite && req.body.reply === 'decline')
+           {
+                // destroy invite
+                invite.destroy();
+                res.json({ message: 'invite declined' });
+           }
+           // invalid invite
+           else
+           {
+               // status 400 - bad request
+               res.status(400).json({ error: 'could not reply to invite'})
+           }
+        }
+        // no user
+        else
+        {
+            // status 404 - could not be found
+            res.status(404).json({ error: 'unauthorized to reply to invites'});
+        }
+    } catch (error) {
+        // status 400 - bad request
+        res.status(400).json({ error: 'could not reply to invite'});
+    }
+}
+
 module.exports = userController;

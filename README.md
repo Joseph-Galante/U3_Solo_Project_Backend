@@ -9,7 +9,7 @@ Introducing WorkBear, an organized, accessible, and intuitive application that h
 ## Wireframes
 ERD
 
-![wireframe](https://i.imgur.com/M8W1hEc.png?1)
+![wireframe](https://i.imgur.com/p1ghpIx.png)
 
 Home
 
@@ -39,29 +39,29 @@ Project Details
 8. Once assigned to a task, user may update task to reflect current work progress.
 
 ## Routes
-| Request   | Route URL  | Description   |
-| --------- | --------- | ------------- |
-|   POST    | /users    | user signup   
-|   POST    | /users/login | user login 
-|   GET     | /users/profile | user profile
-|   PUT     | /users/profile | user update
-|   POST    | /projects | create project
-|   GET     | /projects | get projects
-|   GET     | /projects/:id | get one project
-|   PUT     | /projects/:id | update project
-|   POST    | /projects/:projectId/collaborators/:userId | add collaborator
-|   DELETE  | /projects/:projectId/collaborators/:userId | remove collaborator
-|   DELETE  | /projects/:id | delete project
-|   POST    | /projects/:id/tasks | create project task
-|   GET     | /projects/:id/tasks | get project tasks
-|   GET     | /tasks/:id | get one task
-|   POST     | /tasks/:id/assign | assign user to task
-|   PUT     | /tasks/:id | update task
-|   DELETE  | /tasks/:id | delete task
-|   GET     | /tasks/:id/comments | get task comments
-|   GET     | /comments/:id | get one comment
-|   PUT     | /comments/:id | update comment
-|   DELETE  | /comments/:id | delete comment
+| Request   | Route URL  | Description   | Returns   |
+| --------- | --------- | ------------- | --------- |
+|   POST    | /users    | user signup   | new user
+|   POST    | /users/login | user login | user
+|   GET     | /users/profile | user profile | user
+|   PUT     | /users/profile | user update | updated user
+|   GET     | /users/invite | get project invites | project invites
+|   DELETE  | /users/invite/:id | reply to invite | joined project (accept) or null (decline)
+|   POST    | /projects | create project | new project
+|   GET     | /projects | get projects | all projects
+|   GET     | /projects/:id | get one project | project with users and tasks with users
+|   PUT     | /projects/:id | update project | updated project
+|   POST    | /projects/:id/collaborators | invite collaborator | project with users
+|   DELETE  | /projects/:id/collaborators | remove collaborator | project with new users
+|   DELETE  | /projects/:id | delete project | success message
+|   POST    | /projects/:id/tasks | create project task | new task
+|   GET     | /tasks/:id | get one task | task with user, project, and comments
+|   POST    | /tasks/:id/assign | assign user to task | assigned task
+|   PUT     | /tasks/:id | update task | updated task
+|   DELETE  | /tasks/:id | delete task | success message
+|   GET     | /comments/:id | get one comment | comment
+|   PUT     | /comments/:id | update comment | updated comment
+|   DELETE  | /comments/:id | delete comment | success message
     
 ## MVP Goals
 - User creation and auth

@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       models.project.belongsToMany(models.user, { through: 'userProjects'});
       models.project.hasMany(models.task);
+      models.project.hasMany(models.invite);
     }
   };
   project.init({
