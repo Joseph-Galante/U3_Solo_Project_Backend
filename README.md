@@ -1,7 +1,7 @@
 # WorkBear - Project Management App
 
 ### Deployed Link
-**link**
+**TBD**
 
 ## Overview
 Introducing WorkBear, an organized, accessible, and intuitive application that helps ensure project teams work effectively and collaboratively while hashing out those big league projects. WorkBear streamlines all of the project planning and management so your team can focus on what really makes a project successful, the project. Rather than worrying about who's doing what, what they should be doing, or when it's expected to be finished, WorkBear allows team members to stay on track and stay up to date on all of the inner workings of the project. And the best part...it's 100% free!
@@ -10,6 +10,22 @@ Introducing WorkBear, an organized, accessible, and intuitive application that h
 ERD
 
 ![wireframe](https://i.imgur.com/M8W1hEc.png?1)
+
+Home
+
+![wireframe](https://i.imgur.com/3ILMqXW.png)
+
+Profile
+
+![wireframe](https://i.imgur.com/Wfw3P8i.png)
+
+Create Project
+
+![wireframe](https://i.imgur.com/4nIkn4m.png)
+
+Project Details
+
+![wireframe](https://i.imgur.com/nHGnm0H.png)
 
 
 ## User Stories
