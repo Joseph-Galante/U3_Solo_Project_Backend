@@ -49,8 +49,8 @@ Project Details
 |   GET     | /projects | get projects
 |   GET     | /projects/:id | get one project
 |   PUT     | /projects/:id | update project
-|   POST    | /projects/:projectId/collaborators/:userId | add collaborator
-|   DELETE  | /projects/:projectId/collaborators/:userId | remove collaborator
+|   POST    | /projects/:id/collaborators | add collaborator
+|   DELETE  | /projects/:id/collaborators | remove collaborator
 |   DELETE  | /projects/:id | delete project
 |   POST    | /projects/:id/tasks | create project task
 |   GET     | /projects/:id/tasks | get project tasks

@@ -7,7 +7,6 @@ const models = require('../models');
 const UserAuth = require('../middleware/UserAuth');
 // project utilities - for verifying project owner
 const ProjectUtils = require('../middleware/ProjectUtils');
-const projectRoutes = require('../routes/projectRoutes');
 
 // controller obj
 const projectController = {};
@@ -153,7 +152,7 @@ projectController.addCollaborator = async (req ,res) =>
     try {
         // grab project with users
         const project = await models.project.findOne({ 
-            where: { id: req.params.projectId },
+            where: { id: req.params.id },
             include: [ { model: models.user } ]
         });
         // grab authorized user from auth middleware
@@ -162,13 +161,23 @@ projectController.addCollaborator = async (req ,res) =>
         if (user && await ProjectUtils.verifyOwner(project, user))
         {
             // grab user to add
-            const collaborator = await models.user.findOne({ where: { id: req.params.userId}});
-            // add user as collaborator
-            await project.addUser(collaborator);
-            // reload project to reflect users
-            await project.reload();
-            // return project
-            res.json({ message: 'collaborator added', project });
+            const collaborator = await models.user.findOne({ where: { email: req.body.email}});
+            // check if user is already a project member
+            if (await ProjectUtils.verifyMember(project, collaborator))
+            {
+                // return project
+                res.json({ message: 'specified user is already a collaborator', project });
+            }
+            // not a collaborator yet
+            else
+            {
+                // add user as collaborator
+                await project.addUser(collaborator);
+                // reload project to reflect users
+                await project.reload();
+                // return project
+                res.json({ message: 'collaborator added', project });
+            }
         }
         // no user or didn't own project
         else
@@ -189,7 +198,7 @@ projectController.removeCollaborator = async (req ,res) =>
     try {
         // grab project with users
         const project = await models.project.findOne({ 
-            where: { id: req.params.projectId },
+            where: { id: req.params.id },
             include: [ { model: models.user } ]
         });
         // grab authorized user from auth middleware
@@ -198,13 +207,23 @@ projectController.removeCollaborator = async (req ,res) =>
         if (user && await ProjectUtils.verifyOwner(project, user))
         {
             // grab user to remove
-            const collaborator = await models.user.findOne({ where: { id: req.params.userId}});
-            // remove user as collaborator
-            await project.removeUser(collaborator);
-            // reload project to reflect users
-            await project.reload();
-            // return project
-            res.json({ message: 'collaborator removed', project });
+            const collaborator = await models.user.findOne({ where: { email: req.body.email}});
+            // check if collaborator is a project member
+            if (await ProjectUtils.verifyMember(project, collaborator))
+            {
+                // remove user as collaborator
+                await project.removeUser(collaborator);
+                // reload project to reflect users
+                await project.reload();
+                // return project
+                res.json({ message: 'collaborator removed', project });
+            }
+            // not a collaborator yet
+            else
+            {
+                // status 400 - bad request
+                res.status(400).json({ error: 'specified user is not a collaborator'})
+            }
         }
         // no user or didn't own project
         else
@@ -225,7 +244,7 @@ projectController.getAllTasks = async (req, res) =>
     try {
         // grab project
         const project = await models.project.findOne({ where: { id: req.params.id}});
-        // check if project exist
+        // check if project exists
         if (project)
         {
             // get tasks
