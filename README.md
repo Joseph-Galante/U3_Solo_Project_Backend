@@ -46,7 +46,7 @@ Project Details
 |   GET     | /users/profile | user profile | user
 |   PUT     | /users/profile | user update | updated user
 |   GET     | /users/invite | get project invites | project invites
-|   DELETE  | /users/invite/:id | reply to invite | joined project (accept) or null (decline)
+|   DELETE  | /users/invite/:id | reply to invite | joined project (accept) or declined message (decline)
 |   POST    | /projects | create project | new project
 |   GET     | /projects | get projects | all projects
 |   GET     | /projects/:id | get one project | project with users and tasks with users
