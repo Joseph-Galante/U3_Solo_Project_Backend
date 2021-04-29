@@ -17,15 +17,31 @@ ProjectUtils.verifyOwner = async (project, user) =>
     // check if project is owned by user
     if (userProject[0].userId === user.id)
     {
-        console.log('match')
         return true;
     }
     // not owner
     else
     {
-        console.log('no match')
         return false;
     }
+}
+
+// verify project team member
+ProjectUtils.verifyMember = async (project, user) =>
+{
+    let match = false;
+    // get projects users
+    const collaborators = await project.getUsers();
+    // check if project includes user
+    collaborators.forEach(c =>
+    {
+        if (c.dataValues.id == user.id)
+        {
+            match = true;
+        }
+    })
+    // not project member
+    return match;
 }
 
 
