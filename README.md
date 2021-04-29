@@ -9,7 +9,7 @@ Introducing WorkBear, an organized, accessible, and intuitive application that h
 ## Wireframes
 ERD
 
-![wireframe](https://i.imgur.com/M8W1hEc.png?1)
+![wireframe](https://i.imgur.com/M8W1hEc.png?1 | width=200)
 
 Home
 
