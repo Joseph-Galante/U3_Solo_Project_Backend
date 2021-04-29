@@ -146,8 +146,8 @@ projectController.edit = async (req, res) =>
     }
 }
 
-// add user to project
-projectController.addCollaborator = async (req ,res) =>
+// invite user to project
+projectController.inviteCollaborator = async (req ,res) =>
 {
     try {
         // grab project with users
@@ -160,7 +160,7 @@ projectController.addCollaborator = async (req ,res) =>
         // check if user exists and owns project
         if (user && await ProjectUtils.verifyOwner(project, user))
         {
-            // grab user to add
+            // grab user to invite
             const collaborator = await models.user.findOne({ where: { email: req.body.email}});
             // check if user is already a project member
             if (await ProjectUtils.verifyMember(project, collaborator))
@@ -171,24 +171,29 @@ projectController.addCollaborator = async (req ,res) =>
             // not a collaborator yet
             else
             {
-                // add user as collaborator
-                await project.addUser(collaborator);
-                // reload project to reflect users
-                await project.reload();
+                // create invite
+                const invite = await models.invite.create({
+                    message: req.body.message,
+                    sender: user.name
+                });
+                // invite user as collaborator
+                await collaborator.addInvite(invite);
+                // add invite to project
+                await project.addInvite(invite);
                 // return project
-                res.json({ message: 'collaborator added', project });
+                res.json({ message: 'invite sent', project });
             }
         }
         // no user or didn't own project
         else
         {
             // status 401- unauthorized
-            res.status(401).json({ error: 'unauthorized to add collaborator'})
+            res.status(401).json({ error: 'unauthorized to invite collaborator'})
         }
 
     } catch (error) {
         // status 400 - bad request
-        res.status(400).json({ error: 'could not add collaborator' });
+        res.status(400).json({ error: 'could not invite collaborator' });
     }
 }
 
@@ -238,40 +243,40 @@ projectController.removeCollaborator = async (req ,res) =>
     }
 }
 
-// get project's tasks
-projectController.getAllTasks = async (req, res) =>
-{
-    try {
-        // grab project
-        const project = await models.project.findOne({ where: { id: req.params.id}});
-        // check if project exists
-        if (project)
-        {
-            // get tasks
-            const tasks = await project.getTasks({
-                include: [
-                    {
-                        model: models.user
-                    },
-                    {
-                        model: models.project
-                    }
-                ]
-            });
-            // return project's tasks
-            res.json({ message: 'project tasks found', tasks });
-        }
-        // no project
-        else
-        {
-            // status 404 - could not be found
-            res.status(404).json({ error: 'no project found' })
-        }
-    } catch (error) {
-        // status 400 - bad request
-        res.status(400).json({ error: 'could not get project tasks' });
-    }
-}
+// // get project's tasks
+// projectController.getAllTasks = async (req, res) =>
+// {
+//     try {
+//         // grab project
+//         const project = await models.project.findOne({ where: { id: req.params.id}});
+//         // check if project exists
+//         if (project)
+//         {
+//             // get tasks
+//             const tasks = await project.getTasks({
+//                 include: [
+//                     {
+//                         model: models.user
+//                     },
+//                     {
+//                         model: models.project
+//                     }
+//                 ]
+//             });
+//             // return project's tasks
+//             res.json({ message: 'project tasks found', tasks });
+//         }
+//         // no project
+//         else
+//         {
+//             // status 404 - could not be found
+//             res.status(404).json({ error: 'no project found' })
+//         }
+//     } catch (error) {
+//         // status 400 - bad request
+//         res.status(400).json({ error: 'could not get project tasks' });
+//     }
+// }
 
 // create task for project
 projectController.createTask = async (req, res) =>

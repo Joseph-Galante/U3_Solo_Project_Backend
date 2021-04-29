@@ -12,5 +12,7 @@ userRoutes.post('/', userController.signup);
 userRoutes.post('/login', userController.login);
 userRoutes.get('/profile', userController.profile);
 userRoutes.put('/profile', userController.update);
+userRoutes.get('/invites', userController.getInvites);
+userRoutes.delete('/invites/:id', userController.replyToInvite);
 
 module.exports = userRoutes;
