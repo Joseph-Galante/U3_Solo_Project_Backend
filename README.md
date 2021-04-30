@@ -59,6 +59,7 @@ Project Details
 |   POST    | /tasks/:id/assign | assign user to task | assigned task
 |   PUT     | /tasks/:id | update task | updated task
 |   DELETE  | /tasks/:id | delete task | success message
+|   POST    | /tasks/:id/comments | write comment | new comment
 |   GET     | /comments/:id | get one comment | comment
 |   PUT     | /comments/:id | update comment | updated comment
 |   DELETE  | /comments/:id | delete comment | success message

@@ -15,6 +15,7 @@ const routesReport = rowdy.begin(app);
 const userRoutes = require('./routes/userRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const taskRoutes = require('./routes/taskRoutes');
+const commentRoutes = require('./routes/commentRoutes');
 
 // allow json body for api write methods
 app.use(express.json());
@@ -31,6 +32,7 @@ app.use(morgan('tiny'));
 app.use('/users', userRoutes);
 app.use('/projects', projectRoutes);
 app.use('/tasks', taskRoutes);
+app.use('/comments', commentRoutes);
 
 
 //=============== SERVER ===============//
