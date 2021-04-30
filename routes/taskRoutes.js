@@ -13,5 +13,6 @@ taskRoutes.get('/:id', taskController.get);
 taskRoutes.post('/:id/assign', taskController.assign);
 taskRoutes.put('/:id', taskController.edit);
 taskRoutes.delete('/:id', taskController.delete);
+taskRoutes.post('/:id/comments', taskController.comment);
 
 module.exports = taskRoutes;

@@ -9,6 +9,7 @@ const taskController = {};
 // user auth controller
 const UserAuth = require('../middleware/UserAuth');
 const ProjectUtils = require('../middleware/ProjectUtils');
+const commentRoutes = require('../routes/commentRoutes');
 
 
 //=============== METHODS ===============//
@@ -181,6 +182,48 @@ taskController.delete = async (req, res) =>
         console.log(error.message);
         // status 400 - bad request
         res.status(400).json({ error: 'could not delete task' });
+    }
+}
+
+// write comment
+taskController.comment = async (req, res) =>
+{
+    try {
+        // grab task
+        const task = await models.task.findOne({
+            where: { id: req.params.id },
+            include: [ { model: models.project } ]
+        });
+        // grab authorized user from auth middleware
+        const user = await UserAuth.authorizeUser(req.headers.authorization);
+        // check if user exists and is project member
+        if (user && await ProjectUtils.verifyMember(task.project, user))
+        {
+            // create comment
+            const comment = await models.comment.create(
+            {
+                description: req.body.description
+            })
+            // add comment to user
+            await user.addComment(comment);
+            // add comment to task
+            await task.addComment(comment);
+            // reload comment to update owners ids
+            await comment.reload();
+            // return task
+            res.json({ message: 'comment created', comment });
+        }
+        // no user or not a project member
+        else
+        {
+            // status 401- unauthorized
+            res.status(401).json({ error: 'unauthorized to write a comment' })
+        }
+
+    } catch (error) {
+        console.log(error.message);
+        // status 400 - bad request
+        res.status(400).json({ error: 'could not write a comment' });
     }
 }
 

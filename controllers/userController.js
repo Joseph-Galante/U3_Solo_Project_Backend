@@ -53,7 +53,7 @@ userController.signup = async (req, res) =>
             password: hashedPassword
         })
         // encrypt id
-        const encryptedId = jwt.sign({ userId: user.id}, process.env.JWT_SECRET);
+        const encryptedId = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
         // return user with encrypted id
         user.id = encryptedId;
         res.json({ message: 'signup successfull', user: {id: encryptedId, name: user.name, email: user.email} })
@@ -81,9 +81,8 @@ userController.login = async (req, res) =>
         if (bcrypt.compareSync(req.body.password, user.password))
         {
             // encrypt id
-            const encryptedId = jwt.sign({ userId: user.id}, process.env.JWT_SECRET);
+            const encryptedId = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
             // return user with encrypted id
-            user.id = encryptedId;
             res.json({ message: 'login successful', user: {id: encryptedId, name: user.name, email: user.email} })
         }
         // wrong password
