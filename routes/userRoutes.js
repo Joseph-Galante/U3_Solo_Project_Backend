@@ -10,6 +10,7 @@ const userRoutes = express.Router();
 // userRoutes.get('/', userController.getAll);
 userRoutes.post('/', userController.signup);
 userRoutes.post('/login', userController.login);
+userRoutes.get('/verify', userController.verify);
 userRoutes.get('/profile', userController.profile);
 userRoutes.put('/profile', userController.update);
 userRoutes.get('/invites', userController.getInvites);

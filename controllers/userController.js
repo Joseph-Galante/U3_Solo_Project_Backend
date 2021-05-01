@@ -107,9 +107,8 @@ userController.profile = async (req, res) =>
         if (user)
         {
             // encrypt id
-            const encryptedId = jwt.sign({ userId: user.id}, process.env.JWT_SECRET);
+            const encryptedId = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
             // return user with encrypted id
-            user.id = encryptedId;
             res.json({ message: 'user profile found', user: {id: encryptedId, name: user.name, email: user.email} })
         }
         // no user
@@ -136,9 +135,8 @@ userController.update = async (req, res) =>
             // update user
             user.update(req.body);
             // encrypt id
-            const encryptedId = jwt.sign({ userId: user.id}, process.env.JWT_SECRET);
+            const encryptedId = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
             // return user with encrypted id
-            user.id = encryptedId;
             res.json({ message: 'user profile updated', user: {id: encryptedId, name: user.name, email: user.email} })
         }
         // no user
@@ -233,6 +231,31 @@ userController.replyToInvite = async (req, res) =>
     } catch (error) {
         // status 400 - bad request
         res.status(400).json({ error: 'could not reply to invite'});
+    }
+}
+
+// verify user
+userController.verify = async (req, res) =>
+{
+    try {
+        // grab authorized user
+        const user = await UserAuth.authorizeUser(req.headers.authorization);
+        // check if user exists
+        if (user) {
+            // encrypt id
+            const encryptedId = jwt.sign({ userId: user.id }, process.env.JWT_SECRET);
+            // return verified user
+            res.json({ message: 'user verified', user: {id: encryptedId, name: user.name, email: user.email} })
+        }
+        // no user
+        else {
+            // status 404 - could not be found
+            res.status(404).json({ message: 'user not found' });
+        }
+    } catch (error) {
+        console.log(error.message);
+        // status 400 - bad request
+        res.status(400).json({ error: 'could not verify user' });
     }
 }
 

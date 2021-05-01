@@ -50,23 +50,38 @@ projectController.create = async (req, res) =>
     }
 }
 
-// get all projects
+// get user's projects
 projectController.getAll = async (req, res) =>
 {
     try {
-        // grab all projects
-        const projects = await models.project.findAll();
-        // check if projects exist
-        if (projects)
+        if (req.headers.authorization)
         {
-            // return all projects
-            res.json({ message: 'projects found', projects });
-        }
-        // no projects
-        else
-        {
-            // status 404 - could not be found
-            res.status(404).json({ error: 'no projects found' })
+            // grab authorized user from auth middleware
+            const user = await UserAuth.authorizeUser(req.headers.authorization);
+            // check if user exists
+            if (user)
+            {
+                // grab user's projects
+                const projects = await user.getProjects();
+                // check if projects exist
+                if (projects)
+                {
+                    // return all projects
+                    res.json({ message: 'projects found', projects });
+                }
+                // no projects
+                else
+                {
+                    // status 404 - could not be found
+                    res.status(404).json({ error: 'no projects found' });
+                }
+            }
+            // no user
+            else
+            {
+                // status 401- unauthorized
+                res.status(401).json({ error: 'unauthorized to make a project'});
+            }
         }
     } catch (error) {
         // status 400 - bad request
