@@ -340,7 +340,7 @@ projectController.delete = async (req, res) =>
         // grab project
         const project = await models.project.findOne({ where: { id: req.params.id}});
         // check if user exists and owns project
-        if (user && user.id === project.userId)
+        if (user && await ProjectUtils.verifyOwner(project, user))
         {
             // grab all of project's tasks
             const tasks = await models.task.findAll({ where: { projectId: project.id}});
