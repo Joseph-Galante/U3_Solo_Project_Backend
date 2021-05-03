@@ -44,5 +44,25 @@ ProjectUtils.verifyMember = async (project, user) =>
     return match;
 }
 
+// verify users invites - stops floods of invites frome same project
+ProjectUtils.verifyInvite = async (project, user) =>
+{
+    // init to not yet invited
+    let match = false;
+    // get users invites
+    const invites = await user.getInvites();
+    // check if user has invite from project already
+    invites.forEach(i =>
+    {
+        console.log(i);
+        if (i.dataValues.projectId == project.id)
+        {
+            // already invited
+            match = true;
+        }
+    })
+    return match;
+}
+
 
 module.exports = ProjectUtils;

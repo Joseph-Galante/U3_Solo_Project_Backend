@@ -188,8 +188,9 @@ userController.replyToInvite = async (req, res) =>
         {
             // grab invite
             const invite = await models.invite.findOne({ where: { id: req.params.id}});
-           // check if invite exists and is accepted
-           if (invite && req.body.reply === 'accept')
+            console.log(user.id === invite.dataValues.userId)
+           // check if invite exists, is owned by the user and is accepted
+           if (invite && user.id === invite.dataValues.userId && req.body.reply === 'accept')
            {
                // accept invite
                // grab project from invite, include users
@@ -209,7 +210,7 @@ userController.replyToInvite = async (req, res) =>
                res.json({ message: 'invite accepted', project });
            }
            // declined
-           else if (invite && req.body.reply === 'decline')
+           else if (invite && user.id === invite.dataValues.userId && req.body.reply === 'decline')
            {
                 // destroy invite
                 invite.destroy();
@@ -225,8 +226,8 @@ userController.replyToInvite = async (req, res) =>
         // no user
         else
         {
-            // status 404 - could not be found
-            res.status(404).json({ error: 'unauthorized to reply to invites'});
+            // status 401 - unauthorized
+            res.status(401).json({ error: 'unauthorized to reply to invites'});
         }
     } catch (error) {
         // status 400 - bad request

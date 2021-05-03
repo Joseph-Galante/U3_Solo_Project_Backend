@@ -146,7 +146,7 @@ projectController.edit = async (req, res) =>
             // update project
             project.update(req.body);
             // return project
-            res.json({ message: 'project updated',project });
+            res.json({ message: 'project updated', project });
         }
         // no user or didn't own project
         else
@@ -180,10 +180,16 @@ projectController.inviteCollaborator = async (req ,res) =>
             // check if user is already a project member
             if (await ProjectUtils.verifyMember(project, collaborator))
             {
-                // return project
-                res.json({ message: 'specified user is already a collaborator', project });
+                // status 400 - bad request
+                res.status(400).json({ error: 'specified user is already a collaborator' });
             }
-            // not a collaborator yet
+            // check if user already has an invite to this project
+            else if (await ProjectUtils.verifyInvite(project, collaborator))
+            {
+                // status 409 - conflict
+                res.status(409).json({ error: 'specified user already has an invite for this project' });
+            }
+            // not a collaborator yet and not invited yet
             else
             {
                 // create invite
@@ -195,8 +201,8 @@ projectController.inviteCollaborator = async (req ,res) =>
                 await collaborator.addInvite(invite);
                 // add invite to project
                 await project.addInvite(invite);
-                // return project
-                res.json({ message: 'invite sent', project });
+                // return message
+                res.json({ message: 'invite sent' });
             }
         }
         // no user or didn't own project

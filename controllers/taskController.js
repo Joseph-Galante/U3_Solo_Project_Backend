@@ -25,7 +25,7 @@ taskController.get = async (req, res) =>
             },
             include: [
                 { model: models.user },
-                { model: models.project },
+                { model: models.project, include: { model: models.user } },
                 { model: models.comment }
             ]
         })
@@ -48,6 +48,43 @@ taskController.get = async (req, res) =>
     }
 }
 
+// get user's tasks
+taskController.getAll = async (req, res) =>
+{
+    try {
+        // grab authorized user from auth middleware
+        const user = await UserAuth.authorizeUser(req.headers.authorization);
+        // check if user exists
+        if (user)
+        {
+            // grab user's tasks
+            const tasks = await user.getTasks();
+            // check if tasks exist
+            if (tasks)
+            {
+                // return tasks
+                res.json({ message: 'tasks found', tasks });
+            }
+            // no tasks found
+            else
+            {
+                // status 404 - could not be found
+                res.status(404).json({ error: 'no tasks found' });
+            }
+        }
+        // no user
+        else
+        {
+            // status 401 - unauthorized
+            res.status(401).json({ error: 'must be logged in to have tasks'})
+        }
+    } catch (error) {
+        console.log(error.message);
+        // status 400 - bad request
+        res.status(400).json({ error: 'could not get tasks' });
+    }
+}
+
 // assign user to task
 taskController.assign = async (req, res) =>
 {
@@ -60,14 +97,20 @@ taskController.assign = async (req, res) =>
         const project = task.project;
         // grab authorized user from auth middleware
         const user = await UserAuth.authorizeUser(req.headers.authorization);
-        // check if user exists and is project member
-        if (user && await ProjectUtils.verifyMember(project, user))
+        // check if task already has user and user is not project owner
+        if (task.user.id && await ProjectUtils.verifyOwner(project, user))
         {
-            // check for user id in req body to see who should be assigned and user is project owner
-            if (req.body.userId && await ProjectUtils.verifyOwner(project, user))
+            // status 401 - unauthorized
+            res.status(401).json({ error: 'unauthorized to reassign task'})
+        }
+        // check if user exists and is project member
+        else if (user && await ProjectUtils.verifyMember(project, user))
+        {
+            // check for user email in req body to see who should be assigned and user is project owner
+            if (req.body.email && await ProjectUtils.verifyOwner(project, user))
             {
                 // get user to assign to task
-                const assignUser = await models.user.findOne({ where: { id: req.body.userId}});
+                const assignUser = await models.user.findOne({ where: { email: req.body.email}});
                 // check that specified user is a project member
                 if (await ProjectUtils.verifyMember(project, assignUser))
                 {
