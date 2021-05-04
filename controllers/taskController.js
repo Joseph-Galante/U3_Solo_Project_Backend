@@ -26,7 +26,7 @@ taskController.get = async (req, res) =>
             include: [
                 { model: models.user },
                 { model: models.project, include: { model: models.user } },
-                { model: models.comment }
+                { model: models.comment, include: { model: models.user } }
             ]
         })
         // check if task exists
@@ -98,7 +98,7 @@ taskController.assign = async (req, res) =>
         // grab authorized user from auth middleware
         const user = await UserAuth.authorizeUser(req.headers.authorization);
         // check if task already has user and user is not project owner
-        if (task.user.id && await ProjectUtils.verifyOwner(project, user))
+        if (task.user ? !(task.user.id && await ProjectUtils.verifyOwner(project, user)) : false)
         {
             // status 401 - unauthorized
             res.status(401).json({ error: 'unauthorized to reassign task'})
