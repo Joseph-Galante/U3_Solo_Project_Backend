@@ -10,6 +10,7 @@ const taskRoutes = express.Router();
 //=============== ROUTES ===============//
 
 taskRoutes.get('/:id', taskController.get);
+taskRoutes.get('/', taskController.getAll);
 taskRoutes.post('/:id/assign', taskController.assign);
 taskRoutes.put('/:id', taskController.edit);
 taskRoutes.delete('/:id', taskController.delete);

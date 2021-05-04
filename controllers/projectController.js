@@ -50,23 +50,38 @@ projectController.create = async (req, res) =>
     }
 }
 
-// get all projects
+// get user's projects
 projectController.getAll = async (req, res) =>
 {
     try {
-        // grab all projects
-        const projects = await models.project.findAll();
-        // check if projects exist
-        if (projects)
+        if (req.headers.authorization)
         {
-            // return all projects
-            res.json({ message: 'projects found', projects });
-        }
-        // no projects
-        else
-        {
-            // status 404 - could not be found
-            res.status(404).json({ error: 'no projects found' })
+            // grab authorized user from auth middleware
+            const user = await UserAuth.authorizeUser(req.headers.authorization);
+            // check if user exists
+            if (user)
+            {
+                // grab user's projects
+                const projects = await user.getProjects();
+                // check if projects exist
+                if (projects)
+                {
+                    // return all projects
+                    res.json({ message: 'projects found', projects });
+                }
+                // no projects
+                else
+                {
+                    // status 404 - could not be found
+                    res.status(404).json({ error: 'no projects found' });
+                }
+            }
+            // no user
+            else
+            {
+                // status 401- unauthorized
+                res.status(401).json({ error: 'unauthorized to make a project'});
+            }
         }
     } catch (error) {
         // status 400 - bad request
@@ -131,7 +146,7 @@ projectController.edit = async (req, res) =>
             // update project
             project.update(req.body);
             // return project
-            res.json({ message: 'project updated',project });
+            res.json({ message: 'project updated', project });
         }
         // no user or didn't own project
         else
@@ -165,10 +180,16 @@ projectController.inviteCollaborator = async (req ,res) =>
             // check if user is already a project member
             if (await ProjectUtils.verifyMember(project, collaborator))
             {
-                // return project
-                res.json({ message: 'specified user is already a collaborator', project });
+                // status 400 - bad request
+                res.status(400).json({ error: 'specified user is already a collaborator' });
             }
-            // not a collaborator yet
+            // check if user already has an invite to this project
+            else if (await ProjectUtils.verifyInvite(project, collaborator))
+            {
+                // status 409 - conflict
+                res.status(409).json({ error: 'specified user already has an invite for this project' });
+            }
+            // not a collaborator yet and not invited yet
             else
             {
                 // create invite
@@ -180,8 +201,8 @@ projectController.inviteCollaborator = async (req ,res) =>
                 await collaborator.addInvite(invite);
                 // add invite to project
                 await project.addInvite(invite);
-                // return project
-                res.json({ message: 'invite sent', project });
+                // return message
+                res.json({ message: 'invite sent' });
             }
         }
         // no user or didn't own project
@@ -325,7 +346,7 @@ projectController.delete = async (req, res) =>
         // grab project
         const project = await models.project.findOne({ where: { id: req.params.id}});
         // check if user exists and owns project
-        if (user && user.id === project.userId)
+        if (user && await ProjectUtils.verifyOwner(project, user))
         {
             // grab all of project's tasks
             const tasks = await models.task.findAll({ where: { projectId: project.id}});

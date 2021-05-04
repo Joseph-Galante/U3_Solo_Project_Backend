@@ -43,12 +43,13 @@ Project Details
 | --------- | --------- | ------------- | --------- |
 |   POST    | /users    | user signup   | new user
 |   POST    | /users/login | user login | user
+|   GET     | /users/verify | verify user | verified user or 'user not found' message
 |   GET     | /users/profile | user profile | user
 |   PUT     | /users/profile | user update | updated user
 |   GET     | /users/invite | get project invites | project invites
 |   DELETE  | /users/invite/:id | reply to invite | joined project (accept) or declined message (decline)
 |   POST    | /projects | create project | new project
-|   GET     | /projects | get projects | all projects
+|   GET     | /projects | get user's projects | user's projects
 |   GET     | /projects/:id | get one project | project with users and tasks with users
 |   PUT     | /projects/:id | update project | updated project
 |   POST    | /projects/:id/collaborators | invite collaborator | project with users
