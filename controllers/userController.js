@@ -132,6 +132,17 @@ userController.update = async (req, res) =>
         // check if user exists
         if (user)
         {
+            // check if updated email matches any current users emails
+            const users = await models.user.findAll();
+            users.forEach(u =>
+            {
+                // check if emails match and is not current email
+                if (u.email === req.body.email && req.body.email !== user.email)
+                {
+                    // status 409 - conflict
+                    res.status(409).json({ error: 'duplicate emails' });
+                }
+            })
             // update user
             user.update(req.body);
             // encrypt id
