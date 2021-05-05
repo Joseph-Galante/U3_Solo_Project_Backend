@@ -61,7 +61,7 @@ userController.signup = async (req, res) =>
         // check if error is from unqiue email validation
         if (error.message === 'Validation error')
         {
-            res.json({ error: 'email already taken'});
+            res.status(409).json({ error: 'email already taken'});
         }
         // unknown error
         else
